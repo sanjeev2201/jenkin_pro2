@@ -1,21 +1,33 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.8'
-        }
+    agent any
+
+    environment {
+        IMAGE_NAME = 'flask_app_image_1'
+        CONTAINER_NAME = 'flask_app_container_1'
     }
 
     stages {
-        stage('Install Dependencies') {
+        stage('Checkout Code') {
             steps {
-                sh 'pip install -r requirements.txt'
+                echo 'Cloning from GitHub...'
+                sh 'ls -la'
             }
         }
 
-        stage('Run Flask App') {
+        stage('Build Docker Image') {
             steps {
-                sh 'nohup python app.py &'
-                echo 'Flask app started'
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                sh '''
+                    docker stop $CONTAINER_NAME || true
+                    docker rm $CONTAINER_NAME || true
+                    docker run -d --name $CONTAINER_NAME -p 5002:5000 $IMAGE_NAME
+                '''
+                echo 'Flask app is now running inside a Docker container!'
             }
         }
     }
