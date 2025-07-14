@@ -25,7 +25,7 @@ pipeline {
                 sh '''
                     docker stop $CONTAINER_NAME || true
                     docker rm $CONTAINER_NAME || true
-                    docker run -d --name $CONTAINER_NAME -p 5002:5000 $IMAGE_NAME
+                    docker run -d --name $CONTAINER_NAME -p 5051:5000 $IMAGE_NAME
                 '''
                 echo 'Flask app is now running inside a Docker container!'
             }
